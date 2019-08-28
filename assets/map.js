@@ -124,7 +124,7 @@
 
 	function add_marker( $marker, map, layerGroup ) {
 
-		var title = $marker.find( '.position h3' ).text();
+		var title = $marker.find( 'h3' ).text();
 
 		// job listings list
 		if ( title.length ) {

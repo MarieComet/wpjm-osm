@@ -51,6 +51,7 @@ function wpjm_osm_after_setup_theme() {
 
 	add_filter( 'job_manager_output_jobs_defaults', 'wpjm_osm_job_manager_output_jobs_defaults', 10, 1 );
 	add_action( 'job_manager_job_filters_after', 'wpjm_osm_job_manager_job_filters_after' );
+	add_shortcode( 'wpjm_osm_map', 'wpjm_osm_map_shortcode' );
 	add_filter( 'the_job_location_map_link', 'wpjm_osm_the_job_location_map_link', 10, 2 );
 	add_action( 'single_job_listing_start', 'wpjm_osm_single_job_listing_start', 40 );
 
@@ -141,6 +142,14 @@ function wpjm_osm_job_manager_output_jobs_defaults( $atts ) {
 	return $atts;
 }
 
+function wpjm_osm_map_shortcode() {
+	wp_enqueue_style( 'leaflet-css' );
+	wp_enqueue_script( 'leaflet-js' );
+	wp_enqueue_script( 'leaflet-map' );
+	wp_enqueue_style( 'wpjm-osm-style' );
+	return '<div id="jobsMap" class="wpjm-osm-map"></div>';
+}
+
 /**
  * Display Map on job listings list and enqueue scripts & styles
  *
@@ -148,7 +157,6 @@ function wpjm_osm_job_manager_output_jobs_defaults( $atts ) {
  * @param array $atts [jobs] shortcode attributes
  */
 function wpjm_osm_job_manager_job_filters_after( $atts ) {
-	
 	if ( isset( $atts[ 'show_map' ] ) && $atts[ 'show_map' ] ) {
 		wp_enqueue_style( 'leaflet-css' );
 		wp_enqueue_script( 'leaflet-js' );
