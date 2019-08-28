@@ -80,7 +80,7 @@ function wpjm_osm_update_location_data( $job_id, $post, $update ) {
 	if ( isset( $_POST['_job_location'] ) && !empty( $_POST['_job_location'] ) ) {
 
 		$complete_adress = wp_strip_all_tags( $_POST['_job_location'] );
-		$existing_address = get_post_meta( $job_id, 'job_location', true );
+		$existing_address = get_post_meta( $job_id, '_job_location', true );
 
 		// Construct adress meta check if address is not empty and if different of existing address. If no do not call OSM api 
 		if ( $complete_adress != $existing_address ) {
@@ -111,7 +111,7 @@ function wpjm_osm_update_location_data( $job_id, $post, $update ) {
 				}
 
 				if ( $complete_adress  && '' != $complete_adress ) {
-					update_post_meta( $job_id, 'job_location', $complete_adress );
+					update_post_meta( $job_id, '_job_location', $complete_adress );
 					update_post_meta( $job_id, 'geolocated', 1 );
 				}
 
@@ -120,6 +120,11 @@ function wpjm_osm_update_location_data( $job_id, $post, $update ) {
 				}
 			}
 		}
+	} else {
+		delete_post_meta( $job_id, 'geolocation_formatted_address' );
+		delete_post_meta( $job_id, 'geolocation_lat' );
+		delete_post_meta( $job_id, 'geolocation_long' );
+		update_post_meta( $job_id, 'geolocated', 0 );
 	}
 }
 
