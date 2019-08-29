@@ -23,7 +23,7 @@
 			scrollWheelZoom: false,
 			attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
 				'<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-				'Imagery Â© <a href="https://www.mapbox.com/">Mapbox</a>',
+				'Imagery &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>',
 			id: 'mapbox.streets'
 		}).addTo(map);
 
@@ -72,7 +72,7 @@
 			scrollWheelZoom: false,
 			attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
 				'<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-				'Imagery Â© <a href="https://www.mapbox.com/">Mapbox</a>',
+				'Imagery &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>',
 			id: 'mapbox.streets'
 		}).addTo(map);
 
