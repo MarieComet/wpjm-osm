@@ -84,41 +84,53 @@ function wpjm_osm_update_location_data( $job_id, $post, $update ) {
 		$existing_address = get_post_meta( $job_id, '_job_location', true );
 
 		// Construct adress meta check if address is not empty and if different of existing address. If no do not call OSM api 
+
 		if ( $complete_adress != $existing_address ) {
 
-			$map_url = 'https://nominatim.openstreetmap.org/search/' . $complete_adress . '?format=json&addressdetails=1&limit=1';
+			$invalid_chars = array(
+				',' => '',
+				'?' => '',
+				'&' => '',
+				'=' => '',
+				'#' => '',
+			);
 
-			$request = wp_remote_get( $map_url );
+			$raw_address   = trim( strtolower( str_replace( array_keys( $invalid_chars ), array_values( $invalid_chars ), $complete_adress ) ) );
 
-			if ( is_array( $request ) && ! is_wp_error( $request ) ) {
-				$json = wp_remote_retrieve_body( $request );
+			$map_url = 'https://nominatim.openstreetmap.org/search/' . $raw_address . '?format=json&addressdetails=1&limit=1';
 
-				if( empty( $json ) ) {
-					update_post_meta( $job_id, 'geolocated', 0 );
-					return false;
-				}
+			$request = wp_remote_get( esc_url( $map_url ) );
 
-				$json = json_decode( $json );
-				$lat = $json[0]->lat;
-				$long = $json[0]->lon;
-				$display_name = $json[0]->display_name;
+			if( is_wp_error( $request ) || !is_array( $request ) || empty( $request ) ) { // to do return error to user
+				return false; // Bail early
+			}
 
-				if ( $lat  && '' != $lat ) {
-					update_post_meta( $job_id, 'geolocation_lat', $lat );
-				}
+			$json = wp_remote_retrieve_body( $request );
+			$json = json_decode( $json );
 
-				if ( $long  && '' != $long ) {
-					update_post_meta( $job_id, 'geolocation_long', $long );
-				}
+			if( empty( $json ) ) { // to do return error to user
+				update_post_meta( $job_id, 'geolocated', 0 );
+				return false;
+			}
 
-				if ( $complete_adress  && '' != $complete_adress ) {
-					update_post_meta( $job_id, '_job_location', $complete_adress );
-					update_post_meta( $job_id, 'geolocated', 1 );
-				}
+			$lat = $json[0]->lat;
+			$long = $json[0]->lon;
+			$display_name = $json[0]->display_name;
 
-				if ( $display_name  && '' != $display_name ) {
-					update_post_meta( $job_id, 'geolocation_formatted_address', $display_name );
-				}
+			if ( $lat  && '' != $lat ) {
+				update_post_meta( $job_id, 'geolocation_lat', $lat );
+			}
+
+			if ( $long  && '' != $long ) {
+				update_post_meta( $job_id, 'geolocation_long', $long );
+			}
+
+			if ( $raw_address  && '' != $raw_address ) {
+				update_post_meta( $job_id, 'geolocated', 1 );
+			}
+
+			if ( $display_name  && '' != $display_name ) {
+				update_post_meta( $job_id, 'geolocation_formatted_address', $display_name );
 			}
 		}
 	} else {
@@ -176,7 +188,7 @@ function wpjm_osm_job_manager_job_filters_after( $atts ) {
  */
 function wpjm_osm_the_job_location_map_link( $location, $post ) {
 
-	$map_link = '<a class="osm_map_link" href="' . esc_url( 'https://www.openstreetmap.org/search?query=' . rawurlencode( wp_strip_all_tags( $location ) ) ) . '">' . esc_html( wp_strip_all_tags( $location ) ) . '</a>';
+	$map_link = '<a class="osm_map_link" href="' . esc_attr( esc_url( 'https://www.openstreetmap.org/search?query=' . rawurlencode( wp_strip_all_tags( $location ) ) ) ) . '">' . esc_html( wp_strip_all_tags( $location ) ) . '</a>';
 
 	return $map_link;
 }
